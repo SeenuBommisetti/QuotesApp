@@ -50,7 +50,7 @@ fun ExploreScreen(
             .padding(16.dp)
     ) {
         Text(
-            text = "Saved Quotes",
+            text = "Explore",
             style = MaterialTheme.typography.headlineMedium.copy(fontSize = 28.sp),
         )
 
