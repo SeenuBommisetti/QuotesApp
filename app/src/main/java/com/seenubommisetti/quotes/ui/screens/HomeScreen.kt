@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -22,32 +23,37 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.seenubommisetti.quotes.data.QuoteCategory
-import com.seenubommisetti.quotes.data.getAllQuotes
+import com.seenubommisetti.quotes.data.QuotesDataSource
+import com.seenubommisetti.quotes.data.QuotesDataSource.getAllQuotes
 import com.seenubommisetti.quotes.data.model.Quote
 import com.seenubommisetti.quotes.ui.components.QuoteItemComponent
 import com.seenubommisetti.quotes.ui.components.QuotesCategoryComponent
 import com.seenubommisetti.quotes.ui.components.SectionHeader
+import com.seenubommisetti.quotes.ui.theme.QuotesTheme
+
 
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
+    quotes: List<Quote> = getAllQuotes(),
     onNavigateToExplore: () -> Unit = {},
+    onNavigateToCategory: (String) -> Unit = {}
 ) {
 
-    LazyColumn(modifier = Modifier
-        .padding(16.dp)
-        .fillMaxSize()
+    LazyColumn(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(horizontal =  12.dp)
     ) {
         item {
             Text(
                 text = "Quotes",
-                fontSize = 32.sp,
-                fontWeight = FontWeight.ExtraBold,
-                modifier = Modifier.padding(top = 12.dp)
+                style = MaterialTheme.typography.headlineMedium
+                    .copy(fontWeight = FontWeight.Bold, fontSize = 28.sp),
             )
             Text(
                 text = "Explore awesome quotes from our community",
-                fontSize = 16.sp,
+                style = MaterialTheme.typography.labelLarge,
             )
         }
 
@@ -80,23 +86,25 @@ fun HomeScreen(
         }
 
         item {
-            QuotesList(quotes = getAllQuotes())
+            QuotesList(quotes = quotes)
         }
         item {
             SectionHeader(
-                "Latest Quotes",
+                "Categories",
                 "View All",
             ) {
                  onNavigateToExplore()
             }
         }
         item {
-            QuotesCategoryList()
+            QuotesCategoryList(
+                onNavigateToCategory = onNavigateToCategory
+            )
         }
 
         item {
             SectionHeader(
-                "Latest Quotes",
+                "Popular Quotes",
                 "View All",
             ) {
                  onNavigateToExplore()
@@ -112,23 +120,31 @@ fun HomeScreen(
 
 @Composable
 fun QuotesList(
-    quotes: List<Quote>,
     modifier: Modifier = Modifier,
+    quotes: List<Quote> = getAllQuotes(),
 ) {
     LazyRow(
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier.fillMaxWidth()
 
     ) {
         items(quotes) {
-            QuoteItemComponent(quote = it, modifier = modifier)
+            QuoteItemComponent(
+                quote = it,
+                onFavoriteClick = {
+                    QuotesDataSource.toggleFavorite(it)
+                },
+                modifier = modifier
+            )
         }
     }
 }
 
 
 @Composable
-fun QuotesCategoryList() {
+fun QuotesCategoryList(
+    onNavigateToCategory: (String) -> Unit = {}
+) {
 
     LazyRow {
         items(QuoteCategory.entries) { category ->
@@ -136,6 +152,7 @@ fun QuotesCategoryList() {
                 categoryIcon = category.icon,
                 categoryName = category.displayName,
                 bgColor = category.bgColor,
+                onCategoryClick = onNavigateToCategory
             )
         }
     }
@@ -145,5 +162,7 @@ fun QuotesCategoryList() {
 @Preview(showBackground = true)
 @Composable
 fun QuotesHomeScreenPreview() {
-    HomeScreen()
+    QuotesTheme {
+        HomeScreen()
+    }
 }

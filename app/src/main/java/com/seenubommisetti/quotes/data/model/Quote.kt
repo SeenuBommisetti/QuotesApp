@@ -7,5 +7,5 @@ data class Quote(
     val text: String,
     val author: String,
     val category: QuoteCategory,
-    val avatar: String = "👤"
+    val avatar: String = "👤",
 )
