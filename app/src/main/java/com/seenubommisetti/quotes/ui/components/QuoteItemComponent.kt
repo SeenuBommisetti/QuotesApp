@@ -1,6 +1,8 @@
 package com.seenubommisetti.quotes.ui.components
 
 
+import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,22 +36,23 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.seenubommisetti.quotes.data.QuotesDataSource
-import com.seenubommisetti.quotes.data.QuotesDataSource.getAllQuotes
+import com.seenubommisetti.quotes.data.QuoteCategory
 import com.seenubommisetti.quotes.data.model.Quote
 import com.seenubommisetti.quotes.ui.theme.QuotesTheme
 
 @Composable
 fun QuoteItemComponent(
     quote: Quote,
+    isFavorite: Boolean,
     modifier: Modifier = Modifier,
-    onFavoriteClick: () -> Unit = {}
+    onFavoriteClick: () -> Unit = {},
 ) {
 
-    val isSaved = QuotesDataSource.isFavorite(quote)
+    val context = LocalContext.current
 
     val bgGradient = Brush.linearGradient(
         colors = listOf(Color(0xFF6A11CB), Color(0xFF2575FC))
@@ -87,14 +90,21 @@ fun QuoteItemComponent(
                     horizontalArrangement = Arrangement.End
                 ) {
                     ActionIcon(
-                        icon = Icons.Outlined.Share
+                        icon = Icons.Outlined.Share,
+                        onClick = {
+                            shareButtonImplementation(
+                                quote.text,
+                                quote.author,
+                                context
+                            )
+                        }
                     )
                     Spacer(modifier = Modifier.width(16.dp))
                     ActionIcon(
-                        icon = if (isSaved) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                        icon = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
                         contentDescription = "Save Quote",
-                        tint = if (isSaved) Color.Red.copy(alpha = 0.8f) else Color.White.copy(alpha = 0.8f),
-                        onClick = onFavoriteClick
+                        tint = if (isFavorite) Color.Red.copy(alpha = 0.8f) else Color.White.copy(alpha = 0.8f),
+                        onClick = { onFavoriteClick() }
                     )
                 }
 
@@ -120,7 +130,7 @@ fun QuoteItemComponent(
 
                 Text(
                     text = quote.author,
-                    style = MaterialTheme.typography.titleMedium, // PT Serif Bold Italic
+                    style = MaterialTheme.typography.titleMedium,
                     color = Color.White.copy(alpha = 0.8f)
                 )
             }
@@ -152,10 +162,35 @@ fun ActionIcon(
     }
 }
 
+fun shareButtonImplementation(quoteText: String, author: String?, context: Context) {
+
+    val shareBody = buildString {
+        append("\"$quoteText\"")
+        if (!author.isNullOrBlank()) append("\n— $author")
+    }
+    val shareIntent = Intent().apply {
+        action = Intent.ACTION_SEND
+        putExtra(Intent.EXTRA_TEXT, shareBody)
+        type = "text/plain"
+    }
+
+    val chooser = Intent.createChooser(shareIntent, "Share quote")
+
+    context.startActivity(chooser)
+}
+
 @Preview
 @Composable
 fun QuoteItemPreview() {
     QuotesTheme {
-        QuoteItemComponent(getAllQuotes()[0])
+        QuoteItemComponent(
+            Quote(
+                6,
+                "Do what you feel in your heart to be right - for you will be criticized anyway",
+                "Eleanor Roosevelt",
+                QuoteCategory.COURAGE
+            ),
+            isFavorite = true
+        )
     }
 }
