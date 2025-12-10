@@ -7,12 +7,20 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.seenubommisetti.quotes.ui.QuotesViewModel
 import com.seenubommisetti.quotes.ui.screens.ExploreScreen
 import com.seenubommisetti.quotes.ui.screens.HomeScreen
 import com.seenubommisetti.quotes.ui.screens.SavedItemsScreen
 
 @Composable
-fun QuotesAppNavigation(navController: NavHostController, modifier: Modifier = Modifier) {
+fun QuotesAppNavigation(
+    navController: NavHostController,
+    viewModel: QuotesViewModel,
+    modifier: Modifier = Modifier
+) {
+
+
+
 
     NavHost(
         navController = navController,
@@ -20,6 +28,7 @@ fun QuotesAppNavigation(navController: NavHostController, modifier: Modifier = M
     ) {
         composable(AppNavRoutes.Home.route) {
             HomeScreen(
+                viewModel = viewModel,
                 onNavigateToExplore = { navController.navigate(AppNavRoutes.Explore.route) },
                 onNavigateToCategory = { category ->
                     navController.navigate("details/$category")
@@ -29,7 +38,10 @@ fun QuotesAppNavigation(navController: NavHostController, modifier: Modifier = M
         }
 
         composable(AppNavRoutes.Explore.route) {
-            ExploreScreen(modifier = modifier)
+            ExploreScreen(
+                viewModel = viewModel,
+                modifier = modifier
+            )
         }
 
         composable(
@@ -41,11 +53,11 @@ fun QuotesAppNavigation(navController: NavHostController, modifier: Modifier = M
 
             val categoryName = backStackEntry.arguments?.getString("category")
 
-            ExploreScreen(category = categoryName, modifier = modifier)
+            ExploreScreen(viewModel = viewModel, category = categoryName, modifier = modifier)
         }
 
         composable(AppNavRoutes.Saved.route) {
-            SavedItemsScreen(modifier = modifier)
+            SavedItemsScreen(viewModel = viewModel, modifier = modifier)
         }
     }
 }

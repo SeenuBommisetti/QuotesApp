@@ -1,6 +1,5 @@
 package com.seenubommisetti.quotes.data
 
-import androidx.compose.runtime.mutableStateListOf
 import com.seenubommisetti.quotes.data.model.Quote
 
 object QuotesDataSource {
@@ -123,21 +122,4 @@ object QuotesDataSource {
         )
     )
 
-    fun getAllQuotes(): List<Quote> {
-        return quotes.shuffled()
-    }
-
-    val savedQuotes = mutableStateListOf<Quote>()
-
-    fun toggleFavorite(quote: Quote) {
-        if (savedQuotes.contains(quote)) {
-            savedQuotes.remove(quote)
-        } else {
-            savedQuotes.add(quote)
-        }
-    }
-
-    fun isFavorite(quote: Quote): Boolean {
-        return savedQuotes.contains(quote)
-    }
 }

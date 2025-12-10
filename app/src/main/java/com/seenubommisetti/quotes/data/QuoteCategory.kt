@@ -21,12 +21,4 @@ enum class QuoteCategory(val displayName: String, val icon: ImageVector, val bgC
     LEADERSHIP("Leadership", Icons.Filled.Groups, Color(0xFF1F2937));
 
 
-    companion object {
-        fun getCategory(name: String?): QuoteCategory? {
-            return QuoteCategory.entries.firstOrNull {
-                it.name.equals(name, ignoreCase = true)
-            }
-        }
-    }
-
 }

@@ -8,8 +8,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.seenubommisetti.quotes.navigation.QuotesAppNavigation
+import com.seenubommisetti.quotes.ui.QuotesViewModel
 import com.seenubommisetti.quotes.ui.components.BottomNavigationBar
 import com.seenubommisetti.quotes.ui.theme.QuotesTheme
 
@@ -19,6 +21,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val navController = rememberNavController()
+            val viewModel: QuotesViewModel = viewModel()
             QuotesTheme {
                 Scaffold(
                     bottomBar = { BottomNavigationBar(navController) },
@@ -26,6 +29,7 @@ class MainActivity : ComponentActivity() {
                 ) { innerPadding ->
                     QuotesAppNavigation(
                         navController = navController,
+                        viewModel = viewModel,
                         modifier = Modifier.padding(innerPadding)
                     )
                 }

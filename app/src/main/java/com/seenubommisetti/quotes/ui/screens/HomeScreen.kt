@@ -21,11 +21,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.seenubommisetti.quotes.data.QuoteCategory
-import com.seenubommisetti.quotes.data.QuotesDataSource
-import com.seenubommisetti.quotes.data.QuotesDataSource.getAllQuotes
-import com.seenubommisetti.quotes.data.model.Quote
+import com.seenubommisetti.quotes.ui.QuotesViewModel
 import com.seenubommisetti.quotes.ui.components.QuoteItemComponent
 import com.seenubommisetti.quotes.ui.components.QuotesCategoryComponent
 import com.seenubommisetti.quotes.ui.components.SectionHeader
@@ -35,7 +34,7 @@ import com.seenubommisetti.quotes.ui.theme.QuotesTheme
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    quotes: List<Quote> = getAllQuotes(),
+    viewModel: QuotesViewModel = viewModel(),
     onNavigateToExplore: () -> Unit = {},
     onNavigateToCategory: (String) -> Unit = {}
 ) {
@@ -81,19 +80,19 @@ fun HomeScreen(
                 "Latest Quotes",
                 "View All",
             ) {
-                 onNavigateToExplore()
+                onNavigateToExplore()
             }
         }
 
         item {
-            QuotesList(quotes = quotes)
+            QuotesList(viewModel = viewModel)
         }
         item {
             SectionHeader(
                 "Categories",
                 "View All",
             ) {
-                 onNavigateToExplore()
+                onNavigateToExplore()
             }
         }
         item {
@@ -107,38 +106,40 @@ fun HomeScreen(
                 "Popular Quotes",
                 "View All",
             ) {
-                 onNavigateToExplore()
+                onNavigateToExplore()
             }
         }
 
         item {
-            QuotesList(quotes = getAllQuotes())
+            QuotesList(viewModel = viewModel)
         }
     }
-
 }
 
 @Composable
 fun QuotesList(
+    viewModel: QuotesViewModel,
     modifier: Modifier = Modifier,
-    quotes: List<Quote> = getAllQuotes(),
 ) {
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier.fillMaxWidth()
 
     ) {
-        items(quotes) {
+        items(viewModel.fetchQuotes()) {
             QuoteItemComponent(
                 quote = it,
                 onFavoriteClick = {
-                    QuotesDataSource.toggleFavorite(it)
+                    viewModel.toggleFavorite(it)
                 },
+                isFavorite = viewModel.isFavorite(it),
                 modifier = modifier
             )
         }
     }
 }
+
+
 
 
 @Composable

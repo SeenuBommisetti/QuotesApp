@@ -14,13 +14,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.seenubommisetti.quotes.data.QuotesDataSource
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.seenubommisetti.quotes.ui.QuotesViewModel
 import com.seenubommisetti.quotes.ui.components.QuoteListItem
 import com.seenubommisetti.quotes.ui.theme.QuotesTheme
 
 @Composable
-fun SavedItemsScreen(modifier: Modifier = Modifier) {
-    val savedList = QuotesDataSource.savedQuotes
+fun SavedItemsScreen(
+    modifier: Modifier = Modifier,
+    viewModel: QuotesViewModel = viewModel(),
+) {
+
+    val savedItemsList = viewModel.getAllSavedQuotes()
+
+
 
     Column(
         modifier = modifier
@@ -33,24 +40,26 @@ fun SavedItemsScreen(modifier: Modifier = Modifier) {
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        if (savedList.isEmpty()) {
+        if (savedItemsList.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text("No saved quotes yet!", style = MaterialTheme.typography.bodyMedium)
             }
         } else {
             LazyColumn {
-                items(savedList) { quote ->
+                items(savedItemsList) { quote ->
                     QuoteListItem(
                         quote = quote,
                         onFavoriteClick = {
-                            QuotesDataSource.toggleFavorite(quote)
-                        }
+                            viewModel.toggleFavorite(quote)
+                        },
+                        isFavorite = true
                     )
                 }
             }
         }
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable

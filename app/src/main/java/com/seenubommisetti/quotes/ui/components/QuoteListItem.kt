@@ -28,8 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.seenubommisetti.quotes.data.QuotesDataSource
-import com.seenubommisetti.quotes.data.QuotesDataSource.getAllQuotes
+import com.seenubommisetti.quotes.data.QuoteCategory
 import com.seenubommisetti.quotes.data.model.Quote
 import com.seenubommisetti.quotes.ui.theme.QuotesTheme
 
@@ -38,10 +37,9 @@ fun QuoteListItem(
     quote: Quote,
     modifier: Modifier = Modifier,
     onFavoriteClick: () -> Unit = {},
-    isExploreScreen: Boolean = false
+    isFavorite: Boolean = false,
+    isExploreScreen: Boolean = false,
 ) {
-    val isSaved = QuotesDataSource.isFavorite(quote)
-
 
     Surface(
         modifier = modifier
@@ -84,9 +82,9 @@ fun QuoteListItem(
 
                 IconButton(onClick = onFavoriteClick) {
                     Icon(
-                        imageVector = if (isSaved) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                        imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
                         contentDescription = "Save Quote",
-                        tint = if (isSaved) Color.Red.copy(alpha = 0.8f) else Color.White.copy(alpha = 0.8f),
+                        tint = if (isFavorite) Color.Red.copy(alpha = 0.8f) else Color.White.copy(alpha = 0.8f),
                         modifier = Modifier.size(30.dp)
                     )
                 }
@@ -114,6 +112,13 @@ fun QuoteAvatar(avatar: String, modifier: Modifier = Modifier) {
 @Composable
 fun QuoteListItemPreview() {
     QuotesTheme {
-        QuoteListItem(quote = getAllQuotes().first())
+        QuoteListItem(
+            quote = Quote(
+                17,
+                "Innovation distinguishes between a leader and a follower.",
+                "Steve Jobs",
+                QuoteCategory.LEADERSHIP
+            )
+        )
     }
 }

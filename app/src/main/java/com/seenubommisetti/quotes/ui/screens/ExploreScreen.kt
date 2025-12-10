@@ -24,9 +24,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.seenubommisetti.quotes.data.QuoteCategory
-import com.seenubommisetti.quotes.data.QuotesDataSource.getAllQuotes
-import com.seenubommisetti.quotes.data.model.Quote
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.seenubommisetti.quotes.ui.QuotesViewModel
 import com.seenubommisetti.quotes.ui.components.QuoteListItem
 import com.seenubommisetti.quotes.ui.theme.QuotesTheme
 
@@ -34,13 +33,14 @@ import com.seenubommisetti.quotes.ui.theme.QuotesTheme
 @Composable
 fun ExploreScreen(
     modifier: Modifier = Modifier,
-    categories: List<QuoteCategory> = QuoteCategory.entries,
-    quotes: List<Quote> = getAllQuotes(),
-    category: String? = null
+    viewModel: QuotesViewModel = viewModel(),
+    category: String? = null,
 ) {
     var selectedCategoryName by remember { mutableStateOf("All") }
 
-    if(category != null) {
+    val quotes = viewModel.fetchQuotes()
+
+    if (category != null) {
         selectedCategoryName = category
     }
 
@@ -67,7 +67,7 @@ fun ExploreScreen(
                     onClick = { selectedCategoryName = "All" },
                     label = { Text("All") },
                     shape = RoundedCornerShape(20.dp),
-                    colors = if ( selectedCategoryName == "All") FilterChipDefaults.filterChipColors(
+                    colors = if (selectedCategoryName == "All") FilterChipDefaults.filterChipColors(
                         selectedContainerColor = MaterialTheme.colorScheme.primary,
                         selectedLabelColor = MaterialTheme.colorScheme.onPrimary
                     ) else FilterChipDefaults.filterChipColors(
@@ -76,7 +76,7 @@ fun ExploreScreen(
                     )
                 )
             }
-            items(categories) { category ->
+            items(viewModel.getAllQuoteCategories()) { category ->
                 val selected = category.displayName == selectedCategoryName
 
                 FilterChip(
@@ -97,7 +97,8 @@ fun ExploreScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        val filtered = if (selectedCategoryName == "All") quotes else quotes.filter { it.category.displayName == selectedCategoryName }
+        val filtered =
+            if (selectedCategoryName == "All") quotes else quotes.filter { it.category.displayName == selectedCategoryName }
 
 
         LazyColumn(
